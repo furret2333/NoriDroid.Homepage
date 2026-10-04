@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<title>404 · 未记录的海域 | NoriDroid</title>
+	<meta name="robots" content="noindex">
+	<meta name="theme-color" content="#06111c">
+	<style>
+		/* 404 会在任意路径下出现，相对路径的资源都可能失效 —— 所以样式全部内联；
+		   站点根路径与字体由页尾脚本探测后再挂上（取不到字体时退回系统字体）。 */
+		*, *::before, *::after { box-sizing: border-box; }
+		html, body { height: 100%; }
+		body {
+			margin: 0;
+			display: grid;
+			place-items: center;
+			overflow: hidden;
+			color: #e8f3f5;
+			font: 16px/1.8 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+			background: radial-gradient(ellipse at 50% 35%, #12304a 0%, #071625 52%, #01040a 100%);
+		}
+		.stars {
+			position: fixed; inset: 0; pointer-events: none;
+			background:
+				radial-gradient(1.6px 1.6px at 12% 20%, rgba(223, 241, 255, .85), transparent),
+				radial-gradient(1.2px 1.2px at 28% 70%, rgba(223, 241, 255, .6), transparent),
+				radial-gradient(1.8px 1.8px at 72% 16%, rgba(223, 241, 255, .8), transparent),
+				radial-gradient(1.2px 1.2px at 88% 52%, rgba(223, 241, 255, .55), transparent),
+				radial-gradient(1.4px 1.4px at 54% 34%, rgba(223, 241, 255, .65), transparent),
+				radial-gradient(1px 1px at 40% 86%, rgba(223, 241, 255, .5), transparent),
+				radial-gradient(16px 16px at 78% 30%, rgba(190, 235, 255, .12), transparent),
+				radial-gradient(22px 22px at 20% 46%, rgba(190, 235, 255, .09), transparent);
+			animation: twinkle 5s ease-in-out infinite alternate;
+		}
+		@keyframes twinkle { from { opacity: .65; } to { opacity: 1; } }
+		.floor {
+			position: fixed; left: -50%; right: -50%; bottom: 0; height: 44%; pointer-events: none;
+			background-image: linear-gradient(rgba(103, 232, 249, .22) 1px, transparent 1px), linear-gradient(90deg, rgba(103, 232, 249, .16) 1px, transparent 1px);
+			background-size: 100% 46px, 68px 100%;
+			transform: perspective(360px) rotateX(57deg);
+			transform-origin: 50% 100%;
+			-webkit-mask-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0) 90%);
+			mask-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0) 90%);
+			animation: run 4.5s linear infinite;
+		}
+		@keyframes run { to { background-position: 0 46px, 0 0; } }
+		main { position: relative; z-index: 1; max-width: 560px; padding: 32px 24px 18vh; text-align: center; }
+		.depth { margin: 0 0 18px; font: 500 13px/1 "Outfit", sans-serif; letter-spacing: .3em; color: #6f8b97; }
+		h1 { margin: 0; font: 200 clamp(88px, 22vw, 150px)/1 "Outfit", sans-serif; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px #8ff0e2; }
+		.voice { margin: 22px 0 10px; font-family: "Nori Voice", "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: clamp(21px, 4.6vw, 26px); letter-spacing: .08em; color: #effcfa; text-shadow: 0 0 24px rgba(143, 240, 226, .4); }
+		p.note { margin: 0; color: #a9bfc8; }
+		.home {
+			display: inline-flex; align-items: center; gap: .5em; margin-top: 32px; padding: .85em 1.5em; border-radius: 999px;
+			font: 600 15px/1.2 "Outfit", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; text-decoration: none;
+			color: #04221e; background: linear-gradient(180deg, #a6f6ea, #73dccd);
+			box-shadow: 0 0 0 1px rgba(143, 240, 226, .4), 0 12px 30px -10px rgba(103, 232, 249, .45);
+		}
+		.home:hover { box-shadow: 0 0 0 1px rgba(143, 240, 226, .6), 0 16px 36px -10px rgba(103, 232, 249, .6); }
+		.home:focus-visible { outline: 2px solid #8ff0e2; outline-offset: 3px; }
+		@media (prefers-reduced-motion: reduce) { .stars, .floor { animation: none; } }
+	</style>
+</head>
+<body>
+	<div class="stars" aria-hidden="true"></div>
+	<div class="floor" aria-hidden="true"></div>
+	<main>
+		<p class="depth">???? m · 未记录海域</p>
+		<h1>404</h1>
+		<p class="voice">这片海域，还没有任何记录。</p>
+		<p class="note">你要找的页面不在这里 —— 可能已经搬走，或者从来就不存在。</p>
+		<a class="home" id="home" href="/">回到海面 ↑</a>
+	</main>
+	<script>
+		// 找站点根路径：GitHub Pages 项目站是 /<仓库名>/（例如 /NoriDroid.Homepage/），
+		// 自定义域名或用户站是 /。用 HEAD 探测字体文件来确认，再设置「回到海面」和字体。
+		(function () {
+			var home = document.getElementById("home")
+			var seg = location.pathname.split("/")[1] || ""
+			var bases = seg ? ["/" + seg + "/", "/"] : ["/"]
+			var apply = function (base) {
+				home.setAttribute("href", base)
+				var st = document.createElement("style")
+				st.textContent =
+					'@font-face{font-family:"Outfit";src:url("' + base + 'assets/fonts/outfit-latin.woff2") format("woff2");font-weight:100 900;font-display:swap}' +
+					'@font-face{font-family:"Nori Voice";src:url("' + base + 'assets/fonts/wenkai-voice.woff2") format("woff2");font-display:swap}'
+				document.head.appendChild(st)
+			}
+			if (!window.fetch) { apply("/"); return }
+			var next = function (i) {
+				if (i >= bases.length) { apply("/"); return }
+				fetch(bases[i] + "assets/fonts/outfit-latin.woff2", {method: "HEAD"})
+					.then(function (r) { if (r.ok) apply(bases[i]); else next(i + 1) })
+					.catch(function () { next(i + 1) })
+			}
+			next(0)
+		})()
+	</script>
+</body>
+</html>
