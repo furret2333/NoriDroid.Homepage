@@ -50,6 +50,8 @@ python -m http.server 8000
   git push -u origin main
   ```
 
+  当前官网使用自定义域名 `https://inori.mom/`。仓库根目录的 `CNAME` 文件已经配置为 `inori.mom`；启用 Pages 后，还需要在域名 DNS 中添加 GitHub Pages 的记录。
+
 - **GitHub Pages · 挂在 NoriDroid 仓库的 `gh-pages` 分支**：在上面那一步的基础上，把本目录推到 NoriDroid 仓库的 `gh-pages` 分支，再在 NoriDroid 仓库的 Settings → Pages 里选择它。地址是 `https://furret2333.github.io/NoriDroid/`（与 `index.html` 里现在写的一致）。`sync-public.mjs` 只推 `main`，不会碰这个分支。
 
   ```bash
