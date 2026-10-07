@@ -494,6 +494,9 @@ code {
 .hero-meta a { display: inline-flex; align-items: center; gap: 5px; color: var(--fg-2); }
 .hero-meta a .i { width: 14px; height: 14px; }
 .hero-flags { margin-top: 6px; font-size: 13px; color: var(--fg-3); letter-spacing: .04em; }
+.hero-alt { margin-top: 10px; font-size: 13px; color: var(--fg-3); }
+.hero-alt a { color: var(--fg-2); border-bottom: 1px solid var(--line-strong); text-decoration: none !important; transition: color .2s, border-color .2s; }
+.hero-alt a:hover { color: var(--accent); border-color: var(--accent); }
 .inapp-tip {
 	margin-top: 16px;
 	padding: 10px 14px;

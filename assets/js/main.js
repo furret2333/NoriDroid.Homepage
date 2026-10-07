@@ -691,10 +691,18 @@
 		var REPO = "https://github.com/furret2333/NoriDroid/"
 		var okUrl = function (u) { return typeof u === "string" && u.indexOf(REPO) === 0 }
 
+		/* 下载加速镜像。页面里的 apk-link 指向镜像，apk-alt 保留 GitHub 原链。
+		   镜像只支持带版本号的直链，不支持 /latest/download/，所以从 API 拿到的
+		   browser_download_url 原样拼在镜像域名后面。 */
+		var APK_MIRROR = "https://gh.ddlc.top/"
+		var mirrorUrl = function (u) { return APK_MIRROR + u }
+
 		function apply(d) {
 			var tag = /^v/i.test(d.tag) ? d.tag : "v" + d.tag
 			$$('[data-release="version"]').forEach(function (el) { el.textContent = tag })
-			$$('[data-release="apk-link"]').forEach(function (el) { el.setAttribute("href", d.url) })
+			/* 主按钮走镜像；镜像在前、原链在后，避免国内直连拖慢 */
+			$$('[data-release="apk-link"]').forEach(function (el) { el.setAttribute("href", mirrorUrl(d.url)) })
+			$$('[data-release="apk-alt"]').forEach(function (el) { el.setAttribute("href", d.url) })
 			if (d.size > 0) {
 				var mb = (d.size / 1048576).toFixed(1) + " MB"
 				$$('[data-release="size"]').forEach(function (el) { el.textContent = mb })
