@@ -691,18 +691,25 @@
 		var REPO = "https://github.com/furret2333/NoriDroid/"
 		var okUrl = function (u) { return typeof u === "string" && u.indexOf(REPO) === 0 }
 
-		/* 下载加速镜像。页面里的 apk-link 指向镜像，apk-alt 保留 GitHub 原链。
-		   镜像只支持带版本号的直链，不支持 /latest/download/，所以从 API 拿到的
-		   browser_download_url 原样拼在镜像域名后面。 */
-		var APK_MIRROR = "https://gh.ddlc.top/"
-		var mirrorUrl = function (u) { return APK_MIRROR + u }
+		/* 下载地址策略：主按钮走 Gitee 发行版（国内实测约 1.9 MB/s，未登录可下），
+		   apk-mirror 是第三方镜像兜底，apk-origin 是 GitHub 原链（海外用）。
+		   Gitee 与 GitHub 的路径结构完全相同，只替换域名前缀即可，
+		   所以发新版不用改代码；换仓库只改下面的 GITEE_DL。 */
+		var GH_DL = "https://github.com/furret2333/NoriDroid/releases/download/"
+		var GITEE_DL = "https://gitee.com/HuiQwQ/nori-droid/releases/download/"
+		var MIRROR = "https://gh-proxy.com/"
+		var giteeUrl = function (u) {
+			return typeof u === "string" && u.indexOf(GH_DL) === 0 ? GITEE_DL + u.slice(GH_DL.length) : u
+		}
+		var mirrorUrl = function (u) { return MIRROR + u }
 
 		function apply(d) {
 			var tag = /^v/i.test(d.tag) ? d.tag : "v" + d.tag
 			$$('[data-release="version"]').forEach(function (el) { el.textContent = tag })
-			/* 主按钮走镜像；镜像在前、原链在后，避免国内直连拖慢 */
-			$$('[data-release="apk-link"]').forEach(function (el) { el.setAttribute("href", mirrorUrl(d.url)) })
-			$$('[data-release="apk-alt"]').forEach(function (el) { el.setAttribute("href", d.url) })
+			/* 主按钮走 Gitee；备用依次是第三方镜像与 GitHub 原链 */
+			$$('[data-release="apk-link"]').forEach(function (el) { el.setAttribute("href", giteeUrl(d.url)) })
+			$$('[data-release="apk-mirror"]').forEach(function (el) { el.setAttribute("href", mirrorUrl(d.url)) })
+			$$('[data-release="apk-origin"]').forEach(function (el) { el.setAttribute("href", d.url) })
 			if (d.size > 0) {
 				var mb = (d.size / 1048576).toFixed(1) + " MB"
 				$$('[data-release="size"]').forEach(function (el) { el.textContent = mb })
