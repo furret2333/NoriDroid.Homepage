@@ -691,23 +691,30 @@
 		var REPO = "https://github.com/furret2333/NoriDroid/"
 		var okUrl = function (u) { return typeof u === "string" && u.indexOf(REPO) === 0 }
 
-		/* 下载地址策略：主按钮走 Gitee 发行版（国内实测约 1.9 MB/s，未登录可下），
+		/* 下载地址策略：主按钮走 Gitee 仓库里的 raw 文件（国内实测约 2.5 MB/s，免登录）。
+		   ⚠ 不要用 Gitee 的发行版附件（/releases/download/…）：它返回
+		     Content-Type: application/zip，浏览器和下载器会把 apk 当成压缩包。
+		     raw 文件返回 application/octet-stream，文件名也正确。
 		   apk-mirror 是第三方镜像兜底，apk-origin 是 GitHub 原链（海外用）。
-		   Gitee 与 GitHub 的路径结构完全相同，只替换域名前缀即可，
-		   所以发新版不用改代码；换仓库只改下面的 GITEE_DL。 */
-		var GH_DL = "https://github.com/furret2333/NoriDroid/releases/download/"
-		var GITEE_DL = "https://gitee.com/HuiQwQ/nori-droid/releases/download/"
+		   raw 路径固定为 /raw/master/dl/<文件名>，所以只取文件名拼接；
+		   发新版不用改代码，只要 Gitee 仓库 dl/ 目录里有同名文件。 */
+		var GITEE_RAW = "https://gitee.com/HuiQwQ/nori-droid/raw/master/dl/"
 		var MIRROR = "https://gh-proxy.com/"
-		var giteeUrl = function (u) {
-			return typeof u === "string" && u.indexOf(GH_DL) === 0 ? GITEE_DL + u.slice(GH_DL.length) : u
+		var baseName = function (u) {
+			if (typeof u !== "string") return u
+			var q = u.indexOf("?")
+			if (q >= 0) u = u.slice(0, q)
+			var i = u.lastIndexOf("/")
+			return i >= 0 ? u.slice(i + 1) : u
 		}
+		var rawUrl = function (u) { return GITEE_RAW + baseName(u) }
 		var mirrorUrl = function (u) { return MIRROR + u }
 
 		function apply(d) {
 			var tag = /^v/i.test(d.tag) ? d.tag : "v" + d.tag
 			$$('[data-release="version"]').forEach(function (el) { el.textContent = tag })
-			/* 主按钮走 Gitee；备用依次是第三方镜像与 GitHub 原链 */
-			$$('[data-release="apk-link"]').forEach(function (el) { el.setAttribute("href", giteeUrl(d.url)) })
+			/* 主按钮走 Gitee raw；备用依次是第三方镜像与 GitHub 原链 */
+			$$('[data-release="apk-link"]').forEach(function (el) { el.setAttribute("href", rawUrl(d.url)) })
 			$$('[data-release="apk-mirror"]').forEach(function (el) { el.setAttribute("href", mirrorUrl(d.url)) })
 			$$('[data-release="apk-origin"]').forEach(function (el) { el.setAttribute("href", d.url) })
 			if (d.size > 0) {
